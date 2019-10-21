@@ -14,15 +14,12 @@ namespace BDLabAnilyze
     {
         [NonSerialized]
         public MainWindow mainWindow;
-        (int count, int paramsCount, int operations, bool isExecuted) Procedures;
-        (int insert, int delete, int update) Triggers;
 
-        
-        List<string> Functions = new List<string>();
-
-        (bool database, bool file, bool filegroup, bool log, bool differential) backup;
-        (bool database, bool file, bool filegroup, bool log, bool differential) restore;
-        (int count, int collums, int constraints, int inserts, int clusteredIndexes, int NotClasteredIndexes) Tables = (0, 0, 0, 0, 0, 0);
+        (int count, int collums, int constraints, int inserts, float mark) Tables;
+        (int clusteredIndexes, int NotClasteredIndexes, float mark) indexes;
+        (bool database, bool file, bool filegroup, bool log, bool differential, float mark) backup;
+        (int count, int paramsCount, int operations, bool isExecuted, float mark) Procedures;
+        (int insert, int delete, int update, float mark) Triggers;
 
 
         bool isRandomProcedure = false;
@@ -35,18 +32,18 @@ namespace BDLabAnilyze
         {
             mainWindow = MW;
         }
-        public void SaveTables(params int[] values)
+        public void SaveTables()
         {
-            Tables.count = values[0];
-            Tables.inserts = values[1];
-            Tables.constraints = values[2];
-            Tables.collums = values[3];           
+            int.TryParse(mainWindow.TablesCount.Text, out Tables.count);
+            int.TryParse(mainWindow.TablesInserts.Text, out Tables.inserts);
+            int.TryParse(mainWindow.TablesConstraints.Text, out Tables.constraints);
+            int.TryParse(mainWindow.TableCollums.Text, out Tables.collums);
         }
 
         public void SaveIndexes()
         {
-            int.TryParse(mainWindow.TablesClastedIndexses.Text, out Tables.clusteredIndexes);
-            int.TryParse(mainWindow.TablesNonclastedIndexes.Text, out Tables.NotClasteredIndexes);
+            int.TryParse(mainWindow.TablesClastedIndexses.Text, out indexes.clusteredIndexes);
+            int.TryParse(mainWindow.TablesNonclastedIndexes.Text, out indexes.NotClasteredIndexes);
         }
 
         public void SaveTypes()
@@ -88,8 +85,8 @@ namespace BDLabAnilyze
             mainWindow.TablesConstraints.Text = Tables.constraints.ToString();
             mainWindow.TableCollums.Text = Tables.collums.ToString();
 
-            mainWindow.TablesClastedIndexses.Text = Tables.clusteredIndexes.ToString();
-            mainWindow.TablesNonclastedIndexes.Text = Tables.NotClasteredIndexes.ToString();
+            mainWindow.TablesClastedIndexses.Text = indexes.clusteredIndexes.ToString();
+            mainWindow.TablesNonclastedIndexes.Text = indexes.NotClasteredIndexes.ToString();
 
             mainWindow.TablesTypes.Text = types.ToString();
             mainWindow.TablesRules.Text = rules.ToString();

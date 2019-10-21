@@ -7,11 +7,11 @@
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         xmlns:local="clr-namespace:BDLabAnilyze"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d" Height="450" Width="800" Visibility="Visible" WindowStyle="None">
+        mc:Ignorable="d" Height="450" Width="800" Visibility="Visible">
 
     <Grid>
         <Grid Height="60" VerticalAlignment="Top" Background="#3f51b5">
-            <TextBlock Text="Design com WPF" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" FontFamily="Champagne &amp; Limousines" />
+            <TextBlock Text="Оценка лабораторных работ по базам данных" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" FontFamily="Champagne &amp; Limousines" />
             <Button HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="ButtonClouse_Click">
                 <materialDesign:PackIcon Kind="Power" Height="20" Width="20"/>
             </Button>
@@ -19,7 +19,7 @@
         <Grid Margin="0 60 0 0">
             <dragablz:TabablzControl x:Name="TabControl" BorderBrush="#3f51b5">
                 
-                <TabItem Width="500" Height="500">
+                <TabItem>
                     <TabItem.Header>
                         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Database" Margin="1 0" Foreground="White"/>
@@ -53,73 +53,91 @@
                     </TabItem.Content>
                 </TabItem> <!-- база данных -->
                 <TabItem Header="Rules">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 10 10 0">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Таблицы:</TextBlock>
-                            <TextBox Name="TablesCount" materialDesign:HintAssist.Hint="Количество таблиц" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="16 0 0 0"
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">Таблицы:</TextBlock>
+                        <TextBox Name="TablesCount" materialDesign:HintAssist.Hint="Количество таблиц" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="16 0 0 0"
                                       VerticalAlignment="Bottom" KeyDown="ComboBox_KeyDown" 
-                                      PreviewTextInput="TablesCount_PreviewTextInput">
-                            </TextBox>
-                            <TextBox Name="TablesInserts" materialDesign:HintAssist.Hint="Количество записей на таблицу" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="16 0 0 0"
+                                      PreviewTextInput="TablesCount_PreviewTextInput" Grid.Column="1"/>
+                        <TextBox Name="TablesInserts" materialDesign:HintAssist.Hint="Количество записей на таблицу" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10 0 0 0"
                                       VerticalAlignment="Bottom" KeyDown="ComboBox_KeyDown" 
-                                      PreviewTextInput="TablesCount_PreviewTextInput">
-                            </TextBox>
-                            <TextBox Name="TablesConstraints" materialDesign:HintAssist.Hint="Количество Ограничений в таблицах" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="16 0 0 0"
+                                      PreviewTextInput="TablesCount_PreviewTextInput" Grid.Column="2"/>
+                        <TextBox Name="TablesConstraints" materialDesign:HintAssist.Hint="Количество Ограничений в таблицах" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10 0 0 0"
                                       VerticalAlignment="Bottom" KeyDown="ComboBox_KeyDown" 
-                                      PreviewTextInput="TablesCount_PreviewTextInput">
-                            </TextBox>
-                            <TextBox Name="TableCollums" materialDesign:HintAssist.Hint="Количество столбцов" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="16 0 0 0"
+                                      PreviewTextInput="TablesCount_PreviewTextInput" Grid.Column="3"/>
+                        <TextBox Name="TableCollums" materialDesign:HintAssist.Hint="Количество столбцов" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10 0 0 0"
                                       VerticalAlignment="Bottom" KeyDown="ComboBox_KeyDown" 
-                                      PreviewTextInput="TablesCount_PreviewTextInput">
-                            </TextBox>                          
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 0 10 0">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Индексы:</TextBlock>
-                            <TextBox Name="TablesNonclastedIndexes" materialDesign:HintAssist.Hint="Некластеризованные индексы" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesClastedIndexses_KeyDown"/>
-                            <TextBox Name="TablesClastedIndexses" materialDesign:HintAssist.Hint="Кластеризованные индексы" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesClastedIndexses_KeyDown"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 0 10 10">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Типы данных:</TextBlock>
-                            <TextBox Name="TablesTypes" materialDesign:HintAssist.Hint="количество типов данных" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
-                            <TextBox Name="TablesRules" materialDesign:HintAssist.Hint="Количесво ограничений к правилам" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 10 10 0">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Востновление:</TextBlock>
-                            <CheckBox x:Name="CheckBoxBase" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">Base</CheckBox>
-                            <CheckBox x:Name="CheckBoxLog" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">Log</CheckBox>
-                            <CheckBox x:Name="CheckBoxFile" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">File</CheckBox>
-                            <CheckBox x:Name="CheckBoxFileGroup" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">File Group</CheckBox>
-                            <CheckBox x:Name="CheckBoxDefferential" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">With Defferential</CheckBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 0 10 0">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Процедуры:</TextBlock>
-                            <TextBox Name="ProcedureCount" materialDesign:HintAssist.Hint="количество процедур" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ProcedureUpdate"/>
-                            <TextBox Name="ProcedureParams" materialDesign:HintAssist.Hint="Минимальное количество параметров" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ProcedureUpdate"/>
-                            <CheckBox x:Name="CheckBoxProcedure" VerticalAlignment="Bottom" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="ProcedureUpdate">Проверять вызов</CheckBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 0 10 0">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Триггеры:</TextBlock>
-                            <TextBox Name="TriggersInsert" materialDesign:HintAssist.Hint="Insert триггеры" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
-                            <TextBox Name="TriggersDelete" materialDesign:HintAssist.Hint="Delete триггеры" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
-                            <TextBox Name="TriggersUpdate" materialDesign:HintAssist.Hint="Update триггеры" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 0 10 10">
-                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Предствления:</TextBlock>
-                            <TextBox Name="ViewsCount" materialDesign:HintAssist.Hint="Количество пркдставлений" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ViewsUpdate"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10 0 0 10">
-                            <Button Margin="0 0 10 0" Style="{StaticResource MaterialDesignRaisedLightButton}" Width="100" ToolTip="Сохраняет настройки с заданным именем" Click="SaveConditions">
-                                    Сохранить
-                                </Button>
-                            <Button Style="{StaticResource MaterialDesignRaisedLightButton}" Width="100" ToolTip="Сохраняет настройки с заданным именем" Click="LoadConditions">
-                                Загрузить
-                            </Button>
-                        </StackPanel>
-                        
-                    </StackPanel>
+                                      PreviewTextInput="TablesCount_PreviewTextInput" Grid.Column="4"/>
+                        <TextBox Name="TableMark" materialDesign:HintAssist.Hint="Оценка за задание" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10 0 10 0"
+                                      VerticalAlignment="Bottom" KeyDown="ComboBox_KeyDown" 
+                                      PreviewTextInput="TablesCount_PreviewTextInput" Grid.Column="5"/>
+
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="1">Индексы:</TextBlock>
+                        <TextBox Name="TablesNonclastedIndexes" materialDesign:HintAssist.Hint="Некластеризованные индексы" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesClastedIndexses_KeyDown" Grid.Row="1" Grid.Column="1"/>
+                        <TextBox Name="TablesClastedIndexses" materialDesign:HintAssist.Hint="Кластеризованные индексы" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesClastedIndexses_KeyDown" Grid.Row="1" Grid.Column="2"/>
+
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0">Типы данных:</TextBlock>
+                        <TextBox Name="TablesTypes" materialDesign:HintAssist.Hint="количество типов данных" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Grid.Row="2" Grid.Column="1" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
+                        <TextBox Name="TablesRules" materialDesign:HintAssist.Hint="Количесво ограничений к правилам" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Grid.Row="2" Grid.Column="2" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
+
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="0">Востновление:</TextBlock>
+                        <CheckBox x:Name="CheckBoxBase" VerticalAlignment="Bottom" Margin="14 0 0 0" Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">Base</CheckBox>
+                        <CheckBox x:Name="CheckBoxLog" VerticalAlignment="Bottom" Margin="7 0 0 0" Grid.Row="3" Grid.Column="2" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">Log</CheckBox>
+                        <CheckBox x:Name="CheckBoxFile" VerticalAlignment="Bottom" Margin="7 0 0 0" Grid.Row="3" Grid.Column="3" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">File</CheckBox>
+                        <CheckBox x:Name="CheckBoxFileGroup" VerticalAlignment="Bottom" Margin="7 0 0 0" Grid.Row="3" Grid.Column="4" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">File Group</CheckBox>
+                        <CheckBox x:Name="CheckBoxDefferential" VerticalAlignment="Bottom" Margin="7 0 0 0" Grid.Row="3" Grid.Column="5" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">With Defferential</CheckBox>
+
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="4" Grid.Column="0">Процедуры:</TextBlock>
+                        <TextBox Name="ProcedureCount" materialDesign:HintAssist.Hint="количество процедур" Margin="16 0 0 0" Grid.Row="4" Grid.Column="1" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ProcedureUpdate"/>
+                        <TextBox Name="ProcedureParams" materialDesign:HintAssist.Hint="Минимальное количество параметров" Margin="10 0 0 0" Grid.Row="4" Grid.Column="2" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ProcedureUpdate"/>
+                        <CheckBox x:Name="CheckBoxProcedure" VerticalAlignment="Bottom" Margin="07 0 0 0" Grid.Row="4" Grid.Column="3" Style="{StaticResource MaterialDesignCheckBox}" Click="ProcedureUpdate">Проверять вызов</CheckBox>
+                        <CheckBox x:Name="CheckBoxProcedureStandartFunction" Margin="07 0 0 0" Grid.Row="4" Grid.Column="4" Style="{StaticResource MaterialDesignCheckBox}" Click="ProcedureUpdate" VerticalAlignment="Bottom">Стандартная функция</CheckBox>
+
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="5" Grid.Column="0">Триггеры:</TextBlock>
+                        <TextBox Name="TriggersInsert" materialDesign:HintAssist.Hint="Insert триггеры" Margin="16 0 0 0" Grid.Row="5" Grid.Column="1" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
+                        <TextBox Name="TriggersDelete" materialDesign:HintAssist.Hint="Delete триггеры" Margin="10 0 0 0" Grid.Row="5" Grid.Column="2" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
+                        <TextBox Name="TriggersUpdate" materialDesign:HintAssist.Hint="Update триггеры" Margin="10 0 0 0" Grid.Row="5" Grid.Column="3" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
+
+                        <TextBlock Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="6" Grid.Column="0">Предствления:</TextBlock>
+                        <TextBox Name="ViewsCount" materialDesign:HintAssist.Hint="Количество пркдставлений" Margin="16 0 0 0" Grid.Row="6" Grid.Column="1" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ViewsUpdate"/>
+
+                        <Button Margin="10 0 7 0" Content="Сохранить"  Grid.Row="8" Grid.Column="0" Style="{StaticResource MaterialDesignRaisedLightButton}"  ToolTip="Сохраняет настройки с заданным именем" Click="SaveConditions"/>
+                        <Button Margin="17 0 0 0" Content="Загрузить"  Grid.Row="8" Grid.Column="1" Style="{StaticResource MaterialDesignRaisedLightButton}"  ToolTip="Сохраняет настройки с заданным именем" Click="LoadConditions"/>
+
+                    </Grid>
                 </TabItem>
                 <TabItem Header="Result">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Looks Quite Nice</TextBlock>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="20*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Оценка: " Margin="16 0 0 0" Grid.Row="0"/>
+                        <ScrollViewer Name="ResultView" Margin="16 16 0 0" Grid.Row="1"/>
+
+                    </Grid>
                 </TabItem>
             </dragablz:TabablzControl>
         </Grid>

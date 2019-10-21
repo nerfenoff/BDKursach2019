@@ -75,7 +75,7 @@ namespace BDLabAnilyze
                 SqlConnection connectionNew = new SqlConnection(MainWindow.connectionString);
                 sqlAnilyze = new SQLAnilyze(connectionNew);
 
-                sqlAnilyze.AnalyzeCode(text);
+                ResultView.Content = sqlAnilyze.AnalyzeCode(text);
             }
             catch (SqlException ex)
             {
@@ -170,12 +170,7 @@ namespace BDLabAnilyze
 
         private void ComboBox_KeyDown(object sender, KeyEventArgs e)
         {
-            int count = TablesCount.Text != "" ? int.Parse(TablesCount.Text): 0;
-            int inserts = TablesInserts.Text != "" ? int.Parse(TablesInserts.Text) : 0;
-            int constraints = TablesConstraints.Text != "" ? int.Parse(TablesConstraints.Text) : 0;
-            int collum = TableCollums.Text != "" ? int.Parse(TableCollums.Text) : 0;
-
-            conditions.SaveTables(count, inserts, constraints, collum);
+            conditions.SaveTables();
         }
 
         private void TablesCount_PreviewTextInput(object sender, TextCompositionEventArgs e)

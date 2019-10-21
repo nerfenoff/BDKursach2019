@@ -304,7 +304,7 @@ namespace BDLabAnilyze
             while (text.Length < index || !Array.Exists(Commands, (x) => x == target.ToUpper()))
             {
                 target = GetFirsWord(text, ref index);
-                if (target[0] == '-' && target[1] == '-')
+                if (text.Length == index || target[0] == '-' && target[1] == '-')
                     break;
             }
             index -= (target.Length + 1);
@@ -384,7 +384,7 @@ namespace BDLabAnilyze
         }
 
         //***************
-        public void AnalyzeCode(string text)
+        public string AnalyzeCode(string text)
         {
             string word;
             for(int i = 0; i < text.Length; ++i)
@@ -432,6 +432,7 @@ namespace BDLabAnilyze
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine(CD);
+            return CD.ToString();
         }
     }
 }

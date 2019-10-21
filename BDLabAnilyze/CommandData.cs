@@ -359,7 +359,8 @@ namespace BDLabAnilyze
         public override string ToString()
         {
             string result = string.Empty;
-            int i = 0; 
+            int i = 0;
+            result += $"Tables - {Tables.Keys.Count}\n";
             foreach(string key in Tables.Keys)
             {
                 result += key + ": Params - ";
