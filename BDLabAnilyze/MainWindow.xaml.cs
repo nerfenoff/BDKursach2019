@@ -198,7 +198,26 @@ namespace BDLabAnilyze
 
         private void CheckBoxBase_Click(object sender, RoutedEventArgs e)
         {
-            conditions.SaveBackup();
+            conditions.SaveBackups();
+        }
+
+        private void ProcedureUpdate(object sender, KeyEventArgs e)
+        {
+            conditions.SaveProcedures();
+        }
+        private void ProcedureUpdate(object sender, RoutedEventArgs e)
+        {
+            conditions.SaveProcedures();
+        }
+
+        private void TriggersIUpdate(object sender, KeyEventArgs e)
+        {
+            conditions.SaveTriggers();
+        }
+
+        private void ViewsUpdate(object sender, KeyEventArgs e)
+        {
+            conditions.SaveViews();
         }
     }
 }

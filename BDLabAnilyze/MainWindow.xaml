@@ -93,19 +93,19 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10 0 10 0">
                             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Процедуры:</TextBlock>
-                            <TextBox Name="ProcedureCount" materialDesign:HintAssist.Hint="количество процедур" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
-                            <TextBox Name="ProcedureParams" materialDesign:HintAssist.Hint="Минимальное количество параметров" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
-                            <CheckBox x:Name="CheckBoxProcedure" VerticalAlignment="Bottom" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="CheckBoxBase_Click">Проверять вызов</CheckBox>
+                            <TextBox Name="ProcedureCount" materialDesign:HintAssist.Hint="количество процедур" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ProcedureUpdate"/>
+                            <TextBox Name="ProcedureParams" materialDesign:HintAssist.Hint="Минимальное количество параметров" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ProcedureUpdate"/>
+                            <CheckBox x:Name="CheckBoxProcedure" VerticalAlignment="Bottom" Margin="10 0 0 0" Style="{StaticResource MaterialDesignCheckBox}" Click="ProcedureUpdate">Проверять вызов</CheckBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10 0 10 0">
                             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Триггеры:</TextBlock>
-                            <TextBox Name="TriggersInsert" materialDesign:HintAssist.Hint="Insert триггеры" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
-                            <TextBox Name="TriggersDelete" materialDesign:HintAssist.Hint="Delete триггеры" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
-                            <TextBox Name="TriggersUpdate" materialDesign:HintAssist.Hint="Update триггеры" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
+                            <TextBox Name="TriggersInsert" materialDesign:HintAssist.Hint="Insert триггеры" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
+                            <TextBox Name="TriggersDelete" materialDesign:HintAssist.Hint="Delete триггеры" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
+                            <TextBox Name="TriggersUpdate" materialDesign:HintAssist.Hint="Update триггеры" Margin="10 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TriggersIUpdate"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10 0 10 10">
                             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom">Предствления:</TextBlock>
-                            <TextBox Name="ViewsCount" materialDesign:HintAssist.Hint="Количество пркдставлений" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="TablesTypes_KeyDown"/>
+                            <TextBox Name="ViewsCount" materialDesign:HintAssist.Hint="Количество пркдставлений" Margin="16 0 0 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="TablesCount_PreviewTextInput" KeyDown="ViewsUpdate"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10 0 0 10">
                             <Button Margin="0 0 10 0" Style="{StaticResource MaterialDesignRaisedLightButton}" Width="100" ToolTip="Сохраняет настройки с заданным именем" Click="SaveConditions">

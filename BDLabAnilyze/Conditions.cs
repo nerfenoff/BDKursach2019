@@ -15,9 +15,9 @@ namespace BDLabAnilyze
         [NonSerialized]
         public MainWindow mainWindow;
         (int count, int paramsCount, int operations, bool isExecuted) Procedures;
-        (int operations, string type) Triggers;
+        (int insert, int delete, int update) Triggers;
 
-        List<string> Views = new List<string>();
+        
         List<string> Functions = new List<string>();
 
         (bool database, bool file, bool filegroup, bool log, bool differential) backup;
@@ -28,6 +28,7 @@ namespace BDLabAnilyze
         bool isRandomProcedure = false;
         int rules;
         int types;
+        int views;
 
         public Conditions() { }
         public Conditions(MainWindow MW)
@@ -68,6 +69,18 @@ namespace BDLabAnilyze
             int.TryParse(mainWindow.ProcedureParams.Text, out Procedures.paramsCount);
             Procedures.isExecuted = (bool)mainWindow.CheckBoxProcedure.IsChecked;
         }
+
+        public void SaveTriggers()
+        {
+            int.TryParse(mainWindow.TriggersInsert.Text, out Triggers.insert);
+            int.TryParse(mainWindow.TriggersDelete.Text, out Triggers.delete);
+            int.TryParse(mainWindow.TriggersUpdate.Text, out Triggers.update);
+        }
+
+        public void SaveViews()
+        {
+            int.TryParse(mainWindow.ViewsCount.Text, out views);
+        }
         public void UpdateValues()
         {
             mainWindow.TablesCount.Text = Tables.count.ToString();
@@ -81,7 +94,21 @@ namespace BDLabAnilyze
             mainWindow.TablesTypes.Text = types.ToString();
             mainWindow.TablesRules.Text = rules.ToString();
 
+            mainWindow.CheckBoxBase.IsChecked = backup.database;
+            mainWindow.CheckBoxLog.IsChecked = backup.log;
+            mainWindow.CheckBoxFile.IsChecked = backup.file;
+            mainWindow.CheckBoxFileGroup.IsChecked = backup.filegroup;
+            mainWindow.CheckBoxDefferential.IsChecked = backup.differential;
 
+            mainWindow.ProcedureCount.Text = Procedures.count.ToString();
+            mainWindow.ProcedureParams.Text = Procedures.paramsCount.ToString();
+            mainWindow.CheckBoxProcedure.IsChecked = Procedures.isExecuted;
+
+            mainWindow.TriggersInsert.Text = Triggers.insert.ToString();
+            mainWindow.TriggersDelete.Text = Triggers.delete.ToString();
+            mainWindow.TriggersUpdate.Text = Triggers.update.ToString();
+
+            mainWindow.ViewsCount.Text = views.ToString();         
         }
 
         public override string ToString()
