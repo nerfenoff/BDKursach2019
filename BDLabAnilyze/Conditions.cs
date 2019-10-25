@@ -316,10 +316,25 @@ namespace BDLabAnilyze
             if (Procedures.mark == 0)
                 return 0;
 
-            float mark = Procedures.mark / 2f;
+            float mark = Procedures.mark / 3f;
             float result = 0;
 
+            float tempMark = mark / Procedures.count;
+            float tempMark2 = mark / Procedures.count;
+            if (Procedures.isExecuted)
+                tempMark /= 2f;
 
+
+            foreach (string key in CD.Procedures.Keys)
+            {
+                result += tempMark;
+                if (Procedures.isExecuted && CD.Procedures[key].isExecuted)
+                    result += tempMark;
+
+                result += GetMarkOperation(Procedures.paramsCount, CD.Procedures[key].paramsCount, tempMark2);
+            }
+            if (CD.isRandomProcedure)
+                result += mark;
             return result;
         }
 
