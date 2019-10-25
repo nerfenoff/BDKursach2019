@@ -73,7 +73,7 @@ namespace BDLabAnilyze
                 MainWindow.connectionString = @"Data Source=" + ConnectionDataBase.Text
                 + ";Initial Catalog="+dataBaseName+";Integrated Security=True";
                 SqlConnection connectionNew = new SqlConnection(MainWindow.connectionString);
-                sqlAnilyze = new SQLAnilyze(connectionNew);
+                sqlAnilyze = new SQLAnilyze(connectionNew,ref conditions);
 
                 ResultView.Content = sqlAnilyze.AnalyzeCode(text);
             }
@@ -157,21 +157,21 @@ namespace BDLabAnilyze
                 fileName.Text = dialog.FileName;
                 filePath = dialog.FileName;
 
-                // десериализация
-                using (FileStream fs = new FileStream(dialog.FileName, FileMode.OpenOrCreate))
+                for (int i = 0; i < 5; ++i)
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    conditions = (Conditions)formatter.Deserialize(fs);
-                    conditions.mainWindow = this;
-                    conditions.UpdateValues();
+                    // десериализация
+                    using (FileStream fs = new FileStream(dialog.FileName, FileMode.OpenOrCreate))
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        conditions = (Conditions)formatter.Deserialize(fs);
+                        conditions.mainWindow = this;
+                        conditions.UpdateValues();
+                    }
                 }
             }
         }
 
-        private void ComboBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            conditions.SaveTables();
-        }
+        
 
         private void TablesCount_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -181,12 +181,16 @@ namespace BDLabAnilyze
             }
         }
 
-        private void TablesClastedIndexses_KeyDown(object sender, KeyEventArgs e)
+        private void ComboBox_KeyDown(object sender, TextChangedEventArgs e)
+        {
+            conditions.SaveTables();
+        }
+        private void TablesNonclastedIndexes_TextChanged(object sender, TextChangedEventArgs e)
         {
             conditions.SaveIndexes();
         }
 
-        private void TablesTypes_KeyDown(object sender, KeyEventArgs e)
+        private void TablesTypes_KeyDown(object sender, TextChangedEventArgs e)
         {
             conditions.SaveTypes();
         }
@@ -196,7 +200,7 @@ namespace BDLabAnilyze
             conditions.SaveBackups();
         }
 
-        private void ProcedureUpdate(object sender, KeyEventArgs e)
+        private void ProcedureUpdate(object sender, TextChangedEventArgs e)
         {
             conditions.SaveProcedures();
         }
@@ -205,12 +209,17 @@ namespace BDLabAnilyze
             conditions.SaveProcedures();
         }
 
-        private void TriggersIUpdate(object sender, KeyEventArgs e)
+        private void TriggersIUpdate(object sender, TextChangedEventArgs e)
         {
             conditions.SaveTriggers();
         }
 
-        private void ViewsUpdate(object sender, KeyEventArgs e)
+        private void ViewsUpdate(object sender, TextChangedEventArgs e)
+        {
+            conditions.SaveViews();
+        }
+
+        private void ViewsIsJoins_Click(object sender, RoutedEventArgs e)
         {
             conditions.SaveViews();
         }

@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 
 namespace BDLabAnilyze
 {
-    class CommandData
+    public class CommandData
     {
         string[] commands;
-        Dictionary<string, (int collums, int constraints, int inserts, int clusteredIndexes, int NotClasteredIndexes)> Tables = new Dictionary<string, (int, int, int, int, int)>();
-        Dictionary<string, bool> Rules = new Dictionary<string, bool>();
-        Dictionary<string, (int paramsCount, int operations, bool isExecuted)> Procedures = new Dictionary<string, (int paramsCount, int operations, bool isExecuted)>();
-        Dictionary<string, (int operations, string type)> Triggers = new Dictionary<string, (int operations, string type)>();
+        public Dictionary<string, (int collums, int constraints, int inserts, int clusteredIndexes, int NotClasteredIndexes)> Tables = new Dictionary<string, (int, int, int, int, int)>();
+        public Dictionary<string, bool> Rules = new Dictionary<string, bool>();
+        public Dictionary<string, (int paramsCount, int operations, bool isExecuted)> Procedures = new Dictionary<string, (int paramsCount, int operations, bool isExecuted)>();
+        public Dictionary<string, (int operations, string type)> Triggers = new Dictionary<string, (int operations, string type)>();
 
-        List<string> Types = new List<string>();
-        List<string> Views = new List<string>();
-        List<string> Functions = new List<string>();
+        public List<string> Types = new List<string>();
+        public List<string> Views = new List<string>();
+        public List<string> Functions = new List<string>();
 
-        (bool database, bool file, bool filegroup, bool log, bool differential) backup;
-        (bool database, bool file, bool filegroup, bool log, bool differential) restore;
+        public (bool database, bool file, bool filegroup, bool log, bool differential) backup;
+        public (bool database, bool file, bool filegroup, bool log, bool differential) restore;
 
 
-        bool isRandomProcedure = false;
+        public bool isRandomProcedure = false;
         public CommandData() { }
         public CommandData(string[] commands)
         {

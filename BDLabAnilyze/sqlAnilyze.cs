@@ -14,14 +14,14 @@ namespace BDLabAnilyze
     {
 
         public string[] Commands = {"CREATE", "INSERT", "DROP", "UPDATE", "DELETE", "EXECUTE", "EXEC", "GO", "ALTER", "USE", "BACKUP", "RESTORE" };
-        public Conditions conditions = null;
+        public Conditions conditions;
         SqlConnection connection;
         CommandData CD;
-
-        public SQLAnilyze(SqlConnection connection)
+        public SQLAnilyze(SqlConnection connection, ref Conditions conditions)
         {
             this.connection = connection;
             CD = new CommandData(Commands);
+            this.conditions = conditions;
         }
 
         //Парсеры команд
@@ -431,7 +431,8 @@ namespace BDLabAnilyze
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine(CD);
+            //Console.WriteLine(CD);
+            conditions.GetMark(CD);
             return CD.ToString();
         }
     }
