@@ -186,6 +186,8 @@ namespace BDLabAnilyze
             result += GetMarkForindexes(ref CD);
             result += GetMarkForTypes(ref CD);
             result += GetMarkForBackups(ref CD);
+            result += GetMarkForProcedures(ref CD);
+            result += GetMarkForTriggers(ref CD);
 
             mainWindow.Mark.Text = "Оценка: " + (result * 10).ToString();
         }
@@ -319,22 +321,72 @@ namespace BDLabAnilyze
             float mark = Procedures.mark / 3f;
             float result = 0;
 
-            float tempMark = mark / Procedures.count;
-            float tempMark2 = mark / Procedures.count;
+            float tempMark = mark / (float)Procedures.count;
+            float tempMark2 = mark / (float)Procedures.count;
             if (Procedures.isExecuted)
                 tempMark /= 2f;
 
+            float temp = 0;
+            float temp2 = 0;
 
             foreach (string key in CD.Procedures.Keys)
             {
-                result += tempMark;
+                temp += tempMark;
                 if (Procedures.isExecuted && CD.Procedures[key].isExecuted)
-                    result += tempMark;
+                    temp += tempMark;
 
-                result += GetMarkOperation(Procedures.paramsCount, CD.Procedures[key].paramsCount, tempMark2);
+                temp2 += GetMarkOperation(Procedures.paramsCount, CD.Procedures[key].paramsCount, tempMark2);
             }
-            if (CD.isRandomProcedure)
+
+            if (temp > mark)
                 result += mark;
+            else
+                result += temp;
+
+            if (temp2 > mark)
+                result += mark;
+            else
+                result += temp2;
+
+            if (isRandomProcedure && CD.isRandomProcedure)
+                    result += mark;            
+            else
+                result += mark;
+
+            return result;
+        }
+        float GetMarkForTriggers(ref CommandData CD)
+        {
+            if (Triggers.mark == 0)
+                return 0;
+
+            float mark = Triggers.mark / 3f;
+            float result = 0;
+
+            int inserts = 0;
+            int deletes = 0;
+            int updates = 0;
+
+            foreach(string key in CD.Triggers.Keys)
+            {
+                switch (CD.Triggers[key].type)
+                {
+                    case "INSERT":
+                        inserts++;
+                        break;
+                    case "DELETE":
+                        deletes++;
+                        break;
+                    case "UPDATE":
+                        updates++;
+                        break;
+                }
+            }
+
+            result += GetMarkOperation(Triggers.insert, inserts, mark);
+            result += GetMarkOperation(Triggers.delete, deletes, mark);
+            result += GetMarkOperation(Triggers.update, updates, mark);
+
             return result;
         }
 

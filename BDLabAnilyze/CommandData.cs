@@ -209,8 +209,8 @@ namespace BDLabAnilyze
 
             SQLAnilyze.GetFirsWord(CommandText, ref i);
             SQLAnilyze.GetFirsWord(CommandText, ref i);
-
-            string type = SQLAnilyze.GetFirsWord(CommandText, ref i).ToUpper() + " " + SQLAnilyze.GetFirsWord(CommandText, ref i).ToUpper();
+            SQLAnilyze.GetFirsWord(CommandText, ref i);
+            string type = SQLAnilyze.GetFirsWord(CommandText, ref i).ToUpper();
             (int operations, string type) temp = (0, type);
 
             while (i < CommandText.Length)
