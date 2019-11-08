@@ -223,5 +223,15 @@ namespace BDLabAnilyze
         {
             conditions.SaveViews();
         }
+
+        private void TransactiosUpdate(object sender, RoutedEventArgs e)
+        {
+            conditions.SaveTransactions();
+        }
+
+        private void FunctionsUpdate(object sender, TextChangedEventArgs e)
+        {
+            conditions.SaveFunctions();
+        }
     }
 }

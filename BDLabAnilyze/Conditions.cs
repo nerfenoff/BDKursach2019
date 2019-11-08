@@ -21,6 +21,8 @@ namespace BDLabAnilyze
         (int count, int paramsCount, int operations, bool isExecuted, float mark) Procedures;
         (int insert, int delete, int update, float mark) Triggers;
         (int views, bool isJoins, float mark) views;
+        (bool tran, bool inner, bool implicit_transactions, float mark) transactions;
+        (int count, float mark) Functions;
 
 
         bool isRandomProcedure = false;
@@ -29,8 +31,6 @@ namespace BDLabAnilyze
         int typesMark = 0;
 
         int MarksCount = 0;
-
-        int mark = 0;
 
         public Conditions() { }
         public Conditions(MainWindow MW)
@@ -75,9 +75,7 @@ namespace BDLabAnilyze
             int.TryParse(mainWindow.TablesTypes.Text, out types);
             int.TryParse(mainWindow.TablesRules.Text, out rules);
 
-            if (types != 0 || types != null)
-                typesMark = 1;
-            else if (rules != 0 || rules != null)
+            if (types != 0 || rules != 0)
                 typesMark = 1;
             else
                 typesMark = 0;
@@ -148,6 +146,28 @@ namespace BDLabAnilyze
             else
                 views.mark = 0;
         }
+
+        public void SaveTransactions()
+        {
+            transactions.tran = (bool)mainWindow.CheckBoxTran.IsChecked;
+            transactions.inner = (bool)mainWindow.CheckBoxInnerTran.IsChecked;
+            transactions.implicit_transactions = (bool)mainWindow.CheckBoxImplicit.IsChecked;
+
+            if (transactions.tran || transactions.inner || transactions.implicit_transactions)
+                transactions.mark = 1;
+            else
+                transactions.mark = 0;
+        }
+
+        public void SaveFunctions()
+        {
+            int.TryParse(mainWindow.FunctionsCount.Text, out Functions.count);
+
+            if (Functions.count != 0)
+                Functions.mark = 1;
+            else
+                Functions.mark = 0;
+        }
         public void UpdateValues()
         {
             mainWindow.TablesCount.Text = Tables.count.ToString();
@@ -176,6 +196,13 @@ namespace BDLabAnilyze
 
             mainWindow.ViewsCount.Text = views.views.ToString();
             mainWindow.ViewsIsJoins.IsChecked = views.isJoins;
+
+            mainWindow.CheckBoxTran.IsChecked = transactions.tran;
+            mainWindow.CheckBoxInnerTran.IsChecked = transactions.inner;
+            mainWindow.CheckBoxImplicit.IsChecked = transactions.implicit_transactions;
+
+            mainWindow.FunctionsCount.Text = Functions.count.ToString();
+
         }
 
         public void GetMark(CommandData CD)
@@ -188,6 +215,9 @@ namespace BDLabAnilyze
             result += GetMarkForBackups(ref CD);
             result += GetMarkForProcedures(ref CD);
             result += GetMarkForTriggers(ref CD);
+            result += GetMarkForViews(ref CD);
+            result += GetMarkForTransactions(ref CD);
+            result += GetMarkforFunctions(ref CD);
 
             mainWindow.Mark.Text = "Оценка: " + (result * 10).ToString();
         }
@@ -196,6 +226,8 @@ namespace BDLabAnilyze
         {
             if (Tables.mark == 0)
                 return 0;
+            if (Tables.count == 0)
+                Tables.count = 1;
 
             float mark = Tables.mark / 3f;
             float result = 0;
@@ -206,7 +238,12 @@ namespace BDLabAnilyze
             else
                 result += mark * ((float)CD.Tables.Keys.Count / (float)Tables.count);
 
-            float tempMark = mark / (float)Tables.count;
+            float tempMark = mark;
+            if (Tables.count == 0)
+                tempMark /= (float)CD.Tables.Count;
+            else
+                tempMark /= (float)Tables.count;
+
             int constraints = 0;
 
             foreach (string key in CD.Tables.Keys)
@@ -389,6 +426,77 @@ namespace BDLabAnilyze
 
             return result;
         }
+        float GetMarkForViews(ref CommandData CD)
+        {
+            if (views.mark == 0)
+                return 0;
+
+            float mark = views.mark;
+            float result = 0;
+
+            if (views.isJoins)
+                mark /= 2f;
+
+            mark /= views.views;
+
+            foreach(string key in CD.Views.Keys)
+            {
+                result += mark;
+                if (views.isJoins && CD.Views[key])
+                    result += mark;
+            }
+
+            return result;
+        }
+        float GetMarkForTransactions(ref CommandData CD)
+        {
+            if (transactions.mark == 0)
+                return 0;
+
+            float mark = transactions.mark / 3f;
+            float result = 0;
+            if (transactions.tran)
+            {
+                if (CD.trans.tran)
+                {
+                    result += mark;
+                }
+            }
+            else
+                result += mark;
+
+            if (transactions.inner)
+            {
+                if (CD.trans.innerTran)
+                {
+                    result += mark;
+                }
+            }
+            else
+                result += mark;
+
+            if (transactions.implicit_transactions)
+            {
+                if (CD.trans.implicit_transactions)
+                {
+                    result += mark;
+                }
+            }
+            else
+                result += mark;
+
+            return result;
+        }
+        float GetMarkforFunctions(ref CommandData CD)
+        {
+            if (Functions.mark == 0)
+                return 0;
+
+            float mark = Functions.mark;
+            float result = GetMarkOperation(Functions.count,CD.Functions.Count,mark);
+
+            return result;
+        }
 
         float GetMarkOperation(float target, float current, float mark)
         {
@@ -418,6 +526,11 @@ namespace BDLabAnilyze
                 ++MarksCount;
             if (typesMark != 0)
                 ++MarksCount;
+            if (transactions.mark != 0)
+                ++MarksCount;
+            if (Functions.mark != 0)
+                ++MarksCount;
+
 
             if (Tables.mark != 0)
                 Tables.mark /= MarksCount;
@@ -433,6 +546,10 @@ namespace BDLabAnilyze
                 views.mark /= MarksCount;
             if (typesMark != 0)
                 typesMark /= MarksCount;
+            if (transactions.mark != 0)
+                transactions.mark /= MarksCount;
+            if (Functions.mark != 0)
+                Functions.mark /= MarksCount;
         }
 
         public override string ToString()

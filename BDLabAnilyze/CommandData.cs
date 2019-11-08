@@ -14,27 +14,128 @@ namespace BDLabAnilyze
         public Dictionary<string, bool> Rules = new Dictionary<string, bool>();
         public Dictionary<string, (int paramsCount, int operations, bool isExecuted)> Procedures = new Dictionary<string, (int paramsCount, int operations, bool isExecuted)>();
         public Dictionary<string, (int operations, string type)> Triggers = new Dictionary<string, (int operations, string type)>();
+        public Dictionary<string, bool> Views = new Dictionary<string, bool>();
 
         public List<string> Types = new List<string>();
-        public List<string> Views = new List<string>();
         public List<string> Functions = new List<string>();
 
         public (bool database, bool file, bool filegroup, bool log, bool differential) backup;
         public (bool database, bool file, bool filegroup, bool log, bool differential) restore;
+        public (bool tran, bool innerTran, bool implicit_transactions) trans;
 
 
         public bool isRandomProcedure = false;
         public CommandData() { }
         public CommandData(string[] commands)
         {
-            this.commands = new string[commands.Length+1];
-            for(int i = 0; i < commands.Length; ++i)
-            {
-                this.commands[i] = commands[i];
-            }
-            this.commands[this.commands.Length-1] = "SELECT";
+            this.commands = commands;
+
         }
 
+        
+        public void GetCommand(string commandText)
+        {
+            int i = 0;
+            string word = SQLAnilyze.GetFirsWord(commandText, ref i);
+
+            switch (word.ToUpper())
+            {
+                case "CREATE":
+                    Creates(commandText, ref i);
+                    break;
+                case "INSERT":
+                    IsertAnalyze(commandText);
+                    break;
+                case "UPDATE":
+
+                    break;
+                case "DELETE":
+
+                    break;
+                case "ALTER":
+                    Alters(commandText,ref i);
+                    break;
+                case "EXEC":
+                case "EXECUTE":
+                    ExecuteAnalyze(commandText);
+                    break;
+                case "BACKUP":
+                    BackupAnalyze(commandText);
+                    break;
+                case "RESTORE":
+                    RestoreAnalyze(commandText);
+                    break;
+            }
+        }
+
+        void Creates(string text, ref int index)
+        {
+            string word = SQLAnilyze.GetFirsWord(text, ref index).ToUpper();
+            for (int i = 0; i < 3; ++i)
+            {
+                switch (word)
+                {
+
+                    case "TABLE":
+                        TableAnalyze(text);
+                        return;
+                    case "PROC":
+                    case "PROCEDURE":
+                        ProcedureAnalyze(text);
+                        return;
+                    case "TRIGGER":
+                        TriggerAnalyze(text);
+                        return;
+                    case "VIEW":
+                        ViewAnalyze(text);
+                        return;
+                    case "TYPE":
+                    case "RULE":
+                        TypesAnalyze(text);
+                        return;
+                    case "UNIQUE CLUSTERED INDEX":
+                    case "CLUSTERED INDEX":
+                    case "UNIQUE NONCLUSTERED INDEX":
+                    case "NONCLUSTERED INDEX":
+                        IndexAnalyze(text);
+                        return;
+                    case "FUNCTION":
+                        FunctionAnalyze(text);
+                        return;
+                }
+                word += " " + SQLAnilyze.GetFirsWord(text, ref index).ToUpper();
+            }
+        }
+        void Alters(string text, ref int index)
+        {
+            string target = SQLAnilyze.GetFirsWord(text, ref index);
+            switch (target.ToUpper())
+            {
+                case "TABLE":
+                    SQLAnilyze.GetFirsWord(text, ref index);
+                    target = SQLAnilyze.GetFirsWord(text, ref index).ToUpper() + " " + SQLAnilyze.GetFirsWord(text, ref index).ToUpper();
+                    switch (target)
+                    {
+                        case "DROP CONSTRAINT":
+                        case "ADD CONSTRAINT":                          
+                            ConstraintAnalyze(text);
+                            return;
+                    }
+                    return;
+                case "PROCEDURE":                   
+                    ProcedureAnalyze(text);
+                    return;
+                case "TRIGGER":                    
+                    TriggerAnalyze(text);
+                    return;
+                case "VIEW":                   
+                    ViewAnalyze(text);
+                    return;
+                case "FUNCTION":                 
+                    FunctionAnalyze(text);
+                    return;
+            }
+        }
 
         //Разбор команд
         public void ConstraintAnalyze(string CommandText)
@@ -91,7 +192,10 @@ namespace BDLabAnilyze
             SQLAnilyze.GetFirsWord(CommandText, ref i);
             string name = SQLAnilyze.GetFirsWord(CommandText, ref i);
             if (!Tables.ContainsKey(name))
-                return;
+            {
+                Tables.Add(name, (0,0,0,0,0));
+            }
+                
             (int, int, int, int, int) temp = Tables[name];
             ++temp.Item3;
             Tables[name] = temp;
@@ -172,6 +276,7 @@ namespace BDLabAnilyze
         }
         public void ProcedureAnalyze(string CommandText)
         {
+            FindTransactions(CommandText);
             int i = 0;
             SQLAnilyze.GetFirsWord(CommandText, ref i);
             SQLAnilyze.GetFirsWord(CommandText, ref i);
@@ -200,6 +305,7 @@ namespace BDLabAnilyze
         }
         public void TriggerAnalyze(string CommandText)
         {
+            FindTransactions(CommandText);
             int i = 0;
             SQLAnilyze.GetFirsWord(CommandText, ref i);
             SQLAnilyze.GetFirsWord(CommandText, ref i);
@@ -234,9 +340,19 @@ namespace BDLabAnilyze
 
             string name = SQLAnilyze.GetFirsWord(CommandText, ref i);
 
-            if(!Views.Contains(name))
+            if(!Views.ContainsKey(name))
             {
-                Views.Add(name);
+                Views.Add(name, false);
+            }
+
+            if(!Views[name])
+            {
+                Regex regex = new Regex(@"\sJOIN\s");
+                MatchCollection matches = regex.Matches(CommandText);
+                if (matches.Count > 1)
+                {
+                    Views[name] = true;
+                }
             }
         }
         public void BackupAnalyze(string CommandText)
@@ -306,6 +422,7 @@ namespace BDLabAnilyze
         }
         public void FunctionAnalyze(string CommandText)
         {
+            FindTransactions(CommandText);
             int i = 0;
             SQLAnilyze.GetFirsWord(CommandText, ref i);
             SQLAnilyze.GetFirsWord(CommandText, ref i);
@@ -354,6 +471,22 @@ namespace BDLabAnilyze
                 count++;
             return count;
         }
+        void FindTransactions(string text)
+        {
+            Regex regex = new Regex(@"BEGIN (TRAN|TRANSACTION)\s+", RegexOptions.IgnoreCase);
+            int count = regex.Matches(text).Count;
+            if(count > 0)
+            {
+                trans.tran = true;
+                if (count > 1)
+                    trans.innerTran = true;
+            }
+            regex = new Regex(@"SET\s+IMPLICIT_TRANSACTIONS\s+ON\s+", RegexOptions.IgnoreCase);
+            if(regex.Match(text).Success)
+            {
+                trans.implicit_transactions = true;
+            }
+        }
 
         //вывод
         public override string ToString()
@@ -394,14 +527,20 @@ namespace BDLabAnilyze
                 result += $"{key}, type - {Triggers[key].type}, operations - {Triggers[key].operations}\n";
             }
 
-            result += $"\nViews: {Views.Count}\n\n";
+            result += $"\nViews: {Views.Count}\n";
+            foreach(string key in Views.Keys)
+            {
+                result += $"{key}, is multi table - {Views[key]}\n";
+            }
 
-            result += "Backup: \n";
+            result += "\nBackup: \n";
             result += $"database - {backup.database}, differential - {backup.differential}, log - {backup.log}, file - {backup.file}, filegroup - {backup.filegroup}\n\n";
             result += "Restore: \n";
             result += $"database - {restore.database}, differential - {restore.differential}, log - {restore.log}, file - {restore.file}, filegroup - {restore.filegroup}\n\n";
 
-            result += $"Functions - {Functions.Count}\n";
+            result += $"Transactions: defult - {trans.tran}, inner transaction - {trans.innerTran}, implicit_transactions - {trans.implicit_transactions}\n\n";
+            
+            result += $"Functions - {Functions.Count}";
             return result;
         }
     }
