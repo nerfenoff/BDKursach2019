@@ -23,6 +23,7 @@ namespace BDLabAnilyze
         (int views, bool isJoins, float mark) views;
         (bool tran, bool inner, bool implicit_transactions, float mark) transactions;
         (int count, float mark) Functions;
+        (int count, int Joins, int Where, int Having, int GroupBy, float mark) selects;
 
 
         bool isRandomProcedure = false;
@@ -168,8 +169,29 @@ namespace BDLabAnilyze
             else
                 Functions.mark = 0;
         }
+
+        public void SaveSelects()
+        {
+            int.TryParse(mainWindow.SelectesCount.Text,out selects.count);
+            int.TryParse(mainWindow.SelectesJoins.Text,out selects.Joins);
+            int.TryParse(mainWindow.SelectesWhere.Text,out selects.Where);
+            int.TryParse(mainWindow.SelectesGroupBy.Text,out selects.GroupBy);
+            int.TryParse(mainWindow.SelectesHaving.Text,out selects.Having);
+
+
+            if (selects.count != 0 || selects.Where != 0 || selects.Joins != 0 || selects.Having != 0 || selects.GroupBy != 0)
+                selects.mark = 1;
+            else
+                selects.mark = 0;
+        }
         public void UpdateValues()
         {
+            mainWindow.SelectesCount.Text = selects.count.ToString();
+            mainWindow.SelectesJoins.Text = selects.Joins.ToString();
+            mainWindow.SelectesWhere.Text = selects.Where.ToString();
+            mainWindow.SelectesGroupBy.Text = selects.GroupBy.ToString();
+            mainWindow.SelectesHaving.Text = selects.Having.ToString();
+
             mainWindow.TablesCount.Text = Tables.count.ToString();
             mainWindow.TablesInserts.Text = Tables.inserts.ToString();
             mainWindow.TablesConstraints.Text = Tables.constraints.ToString();
@@ -222,6 +244,16 @@ namespace BDLabAnilyze
             mainWindow.Mark.Text = "Оценка: " + (result * 10).ToString();
         }
 
+        float getMarkForSelects(ref CommandData CD)
+        {
+            if (selects.mark == 0)
+                return 0;
+
+            float result = 0;
+
+
+            return result;
+        }
         float GetMarkForTable(ref CommandData CD)
         {
             if (Tables.mark == 0)

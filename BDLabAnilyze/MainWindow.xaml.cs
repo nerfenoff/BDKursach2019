@@ -233,5 +233,10 @@ namespace BDLabAnilyze
         {
             conditions.SaveFunctions();
         }
+
+        private void SelectUpdate(object sender, TextChangedEventArgs e)
+        {
+            conditions.SaveSelects();
+        }
     }
 }

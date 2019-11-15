@@ -47,8 +47,7 @@ namespace BDLabAnilyze
                             isEnd = false;
                             
                         }
-                        
-                            break;
+                        break;
                     }
                 }
                 if (isEnd)
@@ -99,7 +98,7 @@ namespace BDLabAnilyze
                         break;
                     case "VIEW":
                         result += "CREATE " + word + " ";
-                        end = GetIndexOfCommand(text, index);
+                        end = GetIndexOfGO(text, index);
                         while (index < end)
                         {
                             result += text[index++];
@@ -201,7 +200,7 @@ namespace BDLabAnilyze
                     break;
                 case "VIEW":
                     result += target + " ";
-                    end = GetIndexOfCommand(text, index);
+                    end = GetIndexOfGO(text, index);
                     while (index < end)
                     {
                         result += text[index++];

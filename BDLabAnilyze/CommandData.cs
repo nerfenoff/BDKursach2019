@@ -18,6 +18,7 @@ namespace BDLabAnilyze
 
         public List<string> Types = new List<string>();
         public List<string> Functions = new List<string>();
+        public List<(int joins, bool isHaving, bool isWhere, bool isGroopBy, bool isInnerSelectes)> Selectes = new List<(int joins, bool isHaving, bool isWhere, bool isGroopBy, bool isInnerSelectes)>();
 
         public (bool database, bool file, bool filegroup, bool log, bool differential) backup;
         public (bool database, bool file, bool filegroup, bool log, bool differential) restore;
@@ -40,6 +41,9 @@ namespace BDLabAnilyze
 
             switch (word.ToUpper())
             {
+                case "SELECT":
+                    SelectAnalyze(commandText);
+                    break;
                 case "CREATE":
                     Creates(commandText, ref i);
                     break;
@@ -138,6 +142,35 @@ namespace BDLabAnilyze
         }
 
         //Разбор команд
+        public void SelectAnalyze(string CommandText)
+        {
+            int joins = 0;
+            bool isHavings = false;
+            bool isGroupBy = false;
+            bool isHaving = false;
+            bool isWhere = false;
+            bool isInnerSelects = false;
+            Regex regex = new Regex(@"\sJOIN\s", RegexOptions.IgnoreCase);
+            joins = regex.Matches(CommandText).Count;
+
+            regex = new Regex(@"\sHAVING\s", RegexOptions.IgnoreCase);
+            isHavings = regex.IsMatch(CommandText);
+
+            regex = new Regex(@"\sGROUP\sBY\s", RegexOptions.IgnoreCase);
+            isGroupBy = regex.IsMatch(CommandText);
+
+            regex = new Regex(@"\sHAVING\s", RegexOptions.IgnoreCase);
+            isHaving = regex.IsMatch(CommandText);
+
+            regex = new Regex(@"\sWHERE\s", RegexOptions.IgnoreCase);
+            isWhere = regex.IsMatch(CommandText);
+
+            regex = new Regex(@"\sSELECT\s", RegexOptions.IgnoreCase);
+            isInnerSelects = regex.Matches(CommandText).Count > 1;
+
+            Selectes.Add((joins, isHaving, isWhere, isGroupBy, isInnerSelects));
+
+        }
         public void ConstraintAnalyze(string CommandText)
         {
             int i = 0;
@@ -540,7 +573,14 @@ namespace BDLabAnilyze
 
             result += $"Transactions: defult - {trans.tran}, inner transaction - {trans.innerTran}, implicit_transactions - {trans.implicit_transactions}\n\n";
             
-            result += $"Functions - {Functions.Count}";
+            result += $"Functions - {Functions.Count}\n\n";
+
+            result += $"Selectes:\n";
+
+            for(i = 0; i < Selectes.Count; ++i)
+            {
+                result += $"joins - {Selectes[i].joins}, use where - {Selectes[i].isWhere}, use inner selectes - {Selectes[i].isInnerSelectes}, use group by - {Selectes[i].isGroopBy}, use having - {Selectes[i].isHaving}\n";
+            }
             return result;
         }
     }
