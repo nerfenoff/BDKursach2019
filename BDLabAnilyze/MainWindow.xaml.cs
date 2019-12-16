@@ -1,21 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Data.SqlClient;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace BDLabAnilyze
 {
@@ -30,6 +18,8 @@ namespace BDLabAnilyze
         string text;
         SQLAnilyze sqlAnilyze;
         Conditions conditions;
+
+        bool checkErrors = true;
 
         public MainWindow()
         {
@@ -58,61 +48,17 @@ namespace BDLabAnilyze
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //Console.WriteLine(ConnectionDataBase.Text);
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                text = sr.ReadToEnd();
+            }
+                //Console.WriteLine(ConnectionDataBase.Text);
             string connectionString = @"Data Source=" + ConnectionDataBase.Text
-                + ";Initial Catalog=master;Integrated Security=True";
-            SqlConnection connection = new SqlConnection(connectionString);
-            try
-            {
-                // Открываем подключение
-                connection.Open();
-                connection.Close();
-                Console.WriteLine("Succsess");
-                MainWindow.connectionString = connectionString;
-                string dataBaseName = CreateDatabase();
-                MainWindow.connectionString = @"Data Source=" + ConnectionDataBase.Text
-                + ";Initial Catalog="+dataBaseName+";Integrated Security=True";
-                SqlConnection connectionNew = new SqlConnection(MainWindow.connectionString);
-                sqlAnilyze = new SQLAnilyze(connectionNew,ref conditions);
+                    + ";Initial Catalog=master;Integrated Security=True";
+           
+            sqlAnilyze = new SQLAnilyze(connectionString, ref conditions);
 
-                ResultView.Content = sqlAnilyze.AnalyzeCode(text);
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                if(MainWindow.connectionString == null)
-                {
-                    Console.WriteLine("faild");
-                }
-            }
-        }
-
-        string CreateDatabase()
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                FileStream file = File.OpenRead(filePath);
-                using (StreamReader sr = new StreamReader(file,Encoding.Default))
-                {
-                    text = sr.ReadToEnd();
-                }
-                Regex regex = new Regex(@"CREATE DATABASE (\S*);?", RegexOptions.IgnoreCase);
-                string name = regex.Match(text).Groups[1].ToString();
-                try
-                {
-                    connection.Open();
-                    SqlCommand command = new SqlCommand(regex.Match(text).ToString(), connection);
-                    command.ExecuteNonQuery();
-                }
-                catch
-                {
-
-                }
-                return name;
-            }
+            ResultView.Content = sqlAnilyze.AnalyzeCode(text,checkErrors);
         }
 
         private void ButtonClouse_Click(object sender, RoutedEventArgs e)
@@ -170,8 +116,6 @@ namespace BDLabAnilyze
                 }
             }
         }
-
-        
 
         private void TablesCount_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -237,6 +181,11 @@ namespace BDLabAnilyze
         private void SelectUpdate(object sender, TextChangedEventArgs e)
         {
             conditions.SaveSelects();
+        }
+
+        private void CheckBoxErrors_Click(object sender, RoutedEventArgs e)
+        {
+            checkErrors = (bool)((CheckBox)sender).IsChecked;
         }
     }
 }

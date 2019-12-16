@@ -1,25 +1,20 @@
 ﻿using System;
-using System.IO;
 using System.Data.SqlClient;
 using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace BDLabAnilyze
 {
     class SQLAnilyze
     {
-
+        string databaseName = "";
         public string[] Commands = {"CREATE", "INSERT", "DROP", "UPDATE", "DELETE", "EXECUTE", "EXEC", "GO", "ALTER", "USE", "BACKUP", "RESTORE", "BEGIN", "COMMIT", "END", "SET", "SELECT" };
         public Conditions conditions;
         SqlConnection connection;
         CommandData CD;
-        public SQLAnilyze(SqlConnection connection, ref Conditions conditions)
+        public SQLAnilyze(string connectionString, ref Conditions conditions)
         {
-            this.connection = connection;
+            this.connection = new SqlConnection(connectionString);
             connection.Close();
             CD = new CommandData(Commands);
             this.conditions = conditions;
@@ -72,7 +67,15 @@ namespace BDLabAnilyze
             {
                 switch (word)
                 {
-
+                    case "DATABASE":
+                        end = GetIndexOfCommand(text, index);
+                        result = "CREATE " + word;
+                        while (index < end)
+                            result += text[index++];
+                        Regex regex = new Regex(@"CREATE DATABASE (\S*);?", RegexOptions.IgnoreCase);
+                        databaseName = regex.Match(result).Groups[1].ToString();
+                        
+                        break;
                     case "TABLE":
                         result = "CREATE " + word + GetEqualScobe(text, ref index);
                         isFind = true;
@@ -152,7 +155,18 @@ namespace BDLabAnilyze
             {
                 case "TABLE":
                     result += "TABLE " + GetFirsWord(text, ref index) + " ";
-                    target = GetFirsWord(text, ref index).ToUpper() + " " + GetFirsWord(text, ref index).ToUpper();
+                    string tempWord = GetFirsWord(text, ref index).ToUpper();
+                    if(tempWord == "CHECK" || tempWord == "WITH")
+                    {
+                        end = GetIndexOfGO(text, index);
+                        result += tempWord;
+                        while(index < end)
+                        {
+                            result += text[index++];
+                        }
+                        break;
+                    }
+                    target = tempWord + " " + GetFirsWord(text, ref index).ToUpper();
                     switch (target)
                     {
                         case "DROP CONSTRAINT":
@@ -215,9 +229,8 @@ namespace BDLabAnilyze
                     }
                     break;
                 case "DATABASE":
-                    result = "Use master;\nALTER ";
-                    end = GetIndexOfCommand(text, index);
-                    result += target + " ";
+                    result = "ALTER DATABASE ";
+                    end = GetIndexOfGO(text, index);
                     while (index < end)
                     {
                         result += text[index++];
@@ -348,6 +361,15 @@ namespace BDLabAnilyze
                 else
                     result += text[index];
                 index++;
+                if(result == "--")
+                {
+                    while(text.Length > index)
+                    {
+                        if (text[index++] == '\n')
+                            break;
+                    }
+                    result = "";
+                }
             }
             return result;
         }
@@ -436,7 +458,7 @@ namespace BDLabAnilyze
         }
 
         //***************
-        public string AnalyzeCode(string text)
+        public string AnalyzeCode(string text, bool checkOnErrors)
         {
             string word;
             string command = "";
@@ -586,10 +608,15 @@ namespace BDLabAnilyze
 
                         continue;
                     case "USE":
-                        Regex regex = new Regex(@"Catalog=(\w+)?");
+                        Console.WriteLine(connection.ConnectionString);
+                        Regex regex = new Regex(@"Catalog=(\w+)?;");
                         Match match = regex.Match(connection.ConnectionString);
                         word = GetFirsWord(text, ref i);
+                        if (word[word.Length - 1] != ';')
+                            word += ';';
                         connection.ConnectionString = regex.Replace(connection.ConnectionString, $"Catalog={word}");
+                        Console.WriteLine(connection.ConnectionString);
+                        Console.WriteLine("---------------\n");
                         continue;
                         
                 }
@@ -625,36 +652,49 @@ namespace BDLabAnilyze
                             command = "SET IMPLICIT_TRANSACTIONS ON\n" + command;
                     }
                     bool isFail = false;
-                    try
+                    if (checkOnErrors)
                     {
-                        connection.Open();
-
-                        Console.WriteLine(command + "\n");
-                        SqlCommand sqlcommand = new SqlCommand(command, connection);                  
-                        sqlcommand.ExecuteNonQuery();
-                        connection.Close();
-
-                    }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine(e.Message + "\n\n");
-                        isFail = true;
-                        if (tryCath.Item1 != "")
+                        
+                        try
                         {
-                            tryCath.Item1 = "";
-                            tryCath.Item2 = "";
-                            i = tryCath.Item3;
+                            connection.Open();
+
+                            Console.WriteLine(command + "\n");
+                            SqlCommand sqlcommand = new SqlCommand(command, connection);
+                            sqlcommand.ExecuteNonQuery();
+                            connection.Close();
+
                         }
-                        commands.Clear();
-                    }
-                    finally
-                    {
-                        Console.WriteLine("\n\n\n\n");
-                        connection.Close();                        
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message + "\n\n");
+                            isFail = true;
+                            if (tryCath.Item1 != "")
+                            {
+                                tryCath.Item1 = "";
+                                tryCath.Item2 = "";
+                                i = tryCath.Item3;
+                            }
+                            commands.Clear();
+                        }
+                        finally
+                        {
+                            Console.WriteLine("\n\n\n\n");
+                            connection.Close();
+                        }
                     }
 
                     if (!isFail)
                     {
+                        if(databaseName != "")
+                        {
+                            if (databaseName[databaseName.Length - 1] != ';')
+                                databaseName += ';';
+                            Regex regex = new Regex(@"Catalog=(.+)?;");
+                            Match match = regex.Match(connection.ConnectionString);
+                            connection.ConnectionString = regex.Replace(connection.ConnectionString, $"Catalog={databaseName}");
+                        }
+
                         if(commands.Count == 0)
                         {
                             CD.GetCommand(command);
@@ -668,6 +708,8 @@ namespace BDLabAnilyze
                         command = "";
                         commands.Clear();
                     }
+
+                    databaseName = "";
                         
                    
                 }

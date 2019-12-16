@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BDLabAnilyze
 {
@@ -231,6 +224,8 @@ namespace BDLabAnilyze
         {
             GetMarkPerCondition();
             float result = 0;
+
+            result += getMarkForSelects(ref CD);
             result += GetMarkForTable(ref CD);
             result += GetMarkForindexes(ref CD);
             result += GetMarkForTypes(ref CD);
@@ -250,7 +245,30 @@ namespace BDLabAnilyze
                 return 0;
 
             float result = 0;
+            float mark = selects.mark / 5f;
 
+            result += GetMarkOperation(selects.count, CD.Selectes.Count, mark);
+
+            int joins = 0;
+            int where = 0;
+            int groupBy = 0;
+            int having = 0;
+
+            for(int i = 0; i < CD.Selectes.Count; ++i)
+            {
+                if (CD.Selectes[i].joins > 0)
+                    ++joins;
+                if (CD.Selectes[i].isWhere)
+                    ++where;
+                if (CD.Selectes[i].isGroopBy)
+                    ++groupBy;
+                if (CD.Selectes[i].isHaving)
+                    ++having;
+            }
+            result += GetMarkOperation(selects.Joins, joins, mark);
+            result += GetMarkOperation(selects.Where, where, mark);
+            result += GetMarkOperation(selects.GroupBy, groupBy, mark);
+            result += GetMarkOperation(selects.Having, having, mark);
 
             return result;
         }
@@ -542,6 +560,16 @@ namespace BDLabAnilyze
         }
         void GetMarkPerCondition()
         {
+            SaveSelects();
+            SaveTables();
+            SaveIndexes();
+            SaveTypes();
+            SaveBackups();
+            SaveProcedures();
+            SaveTriggers();
+            SaveViews();
+            SaveTransactions();
+            SaveFunctions();
 
             MarksCount = 0;
             if (Tables.mark != 0)

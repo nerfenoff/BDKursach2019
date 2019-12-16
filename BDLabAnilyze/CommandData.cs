@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace BDLabAnilyze
 {
@@ -117,7 +114,13 @@ namespace BDLabAnilyze
             {
                 case "TABLE":
                     SQLAnilyze.GetFirsWord(text, ref index);
-                    target = SQLAnilyze.GetFirsWord(text, ref index).ToUpper() + " " + SQLAnilyze.GetFirsWord(text, ref index).ToUpper();
+                    string tempWord = SQLAnilyze.GetFirsWord(text, ref index).ToUpper();
+                    if(tempWord == "CHECK" || tempWord == "WITH")
+                    {
+                        ConstraintAnalyze(text);
+                        return;
+                    }
+                    target = tempWord + " " + SQLAnilyze.GetFirsWord(text, ref index).ToUpper();
                     switch (target)
                     {
                         case "DROP CONSTRAINT":
@@ -184,12 +187,14 @@ namespace BDLabAnilyze
                 return;
             }
             temp = Tables[name];
-            string command = SQLAnilyze.GetFirsWord(CommandText, ref i).ToUpper() + " " + SQLAnilyze.GetFirsWord(CommandText, ref i);
+            string command = SQLAnilyze.GetFirsWord(CommandText, ref i).ToUpper();
+            while (command != "DROP" && command != "ADD" && command != "CONSTRAINT")
+                command = SQLAnilyze.GetFirsWord(CommandText, ref i).ToUpper();
             switch (command)
             {
-                case "DROP CONSTRAINT": --temp.Item2;
+                case "DROP": --temp.Item2;
                     break;
-                case "ADD CONSTRAINT": ++temp.Item2;
+                case "ADD": ++temp.Item2;
                     break;
             }
             Tables[name] = temp;
@@ -237,7 +242,7 @@ namespace BDLabAnilyze
         {
             int i = 0;
             
-            Regex reg = new Regex(@"ON\s+\w+", RegexOptions.IgnoreCase);
+            Regex reg = new Regex(@"ON (\w+|.+)", RegexOptions.IgnoreCase);
             string name = reg.Match(CommandText).Value;
             if (name == null)
                 return;
@@ -576,11 +581,27 @@ namespace BDLabAnilyze
             result += $"Functions - {Functions.Count}\n\n";
 
             result += $"Selectes:\n";
-
+            result += $"Count - {Selectes.Count}\n\n";
+            int joins = 0;
+            int where = 0;
+            int groupBy = 0;
+            int having = 0;
+            int inner = 0;
             for(i = 0; i < Selectes.Count; ++i)
             {
-                result += $"joins - {Selectes[i].joins}, use where - {Selectes[i].isWhere}, use inner selectes - {Selectes[i].isInnerSelectes}, use group by - {Selectes[i].isGroopBy}, use having - {Selectes[i].isHaving}\n";
+                if (Selectes[i].joins > 0)
+                    ++joins;
+                if (Selectes[i].isWhere)
+                    ++where;
+                if (Selectes[i].isGroopBy)
+                    ++groupBy;
+                if (Selectes[i].isHaving)
+                    ++having;
+                if (Selectes[i].isInnerSelectes)
+                    ++inner;
             }
+            result += $"joins - {joins,3}, where - {where,3}, group by - {groupBy,3}, having - {having,3}, inner selectes - {inner,3}\n";
+
             return result;
         }
     }
